@@ -3,6 +3,7 @@
 
 #include <string>
 
+
 class SlackMessenger {
 public:
     SlackMessenger(const std::string& apiUrl, const std::string& apiToken);
@@ -12,6 +13,16 @@ public:
 private:
     const std::string slackApiUrl;
     const std::string slackApiToken;
+};
+
+class UltrasonicSensor {
+private:
+    int TrigPin;
+    int EchoPin;
+
+public:
+    UltrasonicSensor(int trigPin, int echoPin);
+    float measureDistance();
 };
 
 #endif

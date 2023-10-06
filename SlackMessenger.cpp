@@ -2,9 +2,11 @@
 #include <fstream>
 #include <curl/curl.h>
 #include "SlackMessenger.hpp"
+#include <wiringPi.h>
 
 SlackMessenger::SlackMessenger(const std::string& apiUrl, const std::string& apiToken)
     : slackApiUrl(apiUrl), slackApiToken(apiToken) {}
+
     
 void SlackMessenger::sendMessageToSlack(const std::string& payload) {
     CURL* curl = curl_easy_init();
@@ -46,4 +48,42 @@ std::string SlackMessenger::readJsonFilename(const std::string& filename) {
     file.close();
     return payload;
 }
+
+//UltrasonicSensor
+UltrasonicSensor::UltrasonicSensor(int trigPin, int echoPin)
+: TrigPin(trigPin), EchoPin(echoPin) {
+    //init pinMode
+    wiringPiSetup();
+    pinMode(EchoPin, INPUT);
+    pinMode(TrigPin, OUTPUT);
+}
+
+//
+float UltrasonicSensor::measureDistance() {
+    struct timeval tv1;
+    struct timeval tv2;
+    long time1, time2;
+    float dis;
+
+    digitalWrite(TrigPin, LOW);
+    delayMicroseconds(2);
+
+    digitalWrite(TrigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TrigPin, LOW);
+
+    while (!(digitalRead(EchoPin) == 1));
+    gettimeofday(&tv1, NULL);
+    while (!(digitalRead(EchoPin) == 0));
+    gettimeofday(&tv2, NULL);
+
+    time1 = tv1.tv_sec * 1000000 + tv1.tv_usec;
+    time2 = tv2.tv_sec * 1000000 + tv2.tv_usec;
+
+    dis = (float)(time2 - time1) / 1000000 * 34000 / 2;
+
+    return dis;
+    
+}
+
 
