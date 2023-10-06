@@ -1,0 +1,6 @@
+#main.cpp file ignore (slackApiTokenData)
+main.cpp
+
+#execute file ignore
+*.exe
+test*
