@@ -93,7 +93,7 @@ FaceDetect::FaceDetect(const std::string& xmlPath)
 
 std::string FaceDetect::takePic() {
     //구현 해야함//
-    return "testIMG.jpg";
+    return "IMG.jpg";
 }
 
 int FaceDetect::detect(const std::string& imgPath) {
