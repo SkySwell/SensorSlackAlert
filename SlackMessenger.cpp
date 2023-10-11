@@ -3,6 +3,8 @@
 #include <curl/curl.h>
 #include "SlackMessenger.hpp"
 #include <wiringPi.h>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/objdetect.hpp>
 
 SlackMessenger::SlackMessenger(const std::string& apiUrl, const std::string& apiToken)
     : slackApiUrl(apiUrl), slackApiToken(apiToken) {}
@@ -86,4 +88,38 @@ float UltrasonicSensor::measureDistance() {
     
 }
 
+FaceDetect::FaceDetect(const std::string& xmlPath)
+: haarcascadeXmlPath(xmlPath) {}
 
+std::string FaceDetect::takePic() {
+    //구현 해야함//
+    return "testIMG.jpg";
+}
+
+int FaceDetect::detect(const std::string& imgPath) {
+
+    cv::Mat img = cv::imread(imgPath);
+    //Classifier object
+    cv::CascadeClassifier faceCascade;
+    //load XML to object(faceCascade)
+    faceCascade.load(haarcascadeXmlPath);
+
+    //XML file check
+    if(faceCascade.empty()) {
+        std::cout << "XML file load failed!" << std::endl;
+    }
+
+    std::vector<cv::Rect> faces;
+    faces.clear();
+    faceCascade.detectMultiScale(img, faces, 1.1, 3);
+
+    if(faces.size() > 0) {
+        std::cout << "find FACE!" << std::endl;
+        return 1;
+    }
+    else {
+        std::cout << "not FIND!" << std::endl;
+        return 0;
+    }
+    //return 0;
+}
