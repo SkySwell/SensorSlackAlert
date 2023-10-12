@@ -85,15 +85,16 @@ float UltrasonicSensor::measureDistance() {
     dis = (float)(time2 - time1) / 1000000 * 34000 / 2;
 
     return dis;
-    
 }
 
 FaceDetect::FaceDetect(const std::string& xmlPath)
 : haarcascadeXmlPath(xmlPath) {}
 
-std::string FaceDetect::takePic() {
-    //구현 해야함//
-    return "IMG.jpg";
+std::string FaceDetect::takePic(int picNum) {
+    std::string photoName = "img" + std::to_string(picNum) + ".jpg";
+    std::string command = "/usr/bin/libcamera-jpeg -n -o " + photoName;
+    std::system(command.c_str());
+    return photoName;
 }
 
 int FaceDetect::detect(const std::string& imgPath) {
@@ -121,5 +122,4 @@ int FaceDetect::detect(const std::string& imgPath) {
         std::cout << "not FIND!" << std::endl;
         return 0;
     }
-    //return 0;
 }

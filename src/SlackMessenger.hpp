@@ -28,7 +28,7 @@ public:
 class FaceDetect {
 public:
     FaceDetect(const std::string& xmlPath);
-    std::string takePic();
+    std::string takePic(int picNum);
     int detect(const std::string& imgPath);
 
 private:
