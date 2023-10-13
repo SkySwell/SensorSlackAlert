@@ -3,7 +3,6 @@
 
 #include <string>
 
-
 class SlackMessenger {
 public:
     SlackMessenger(const std::string& apiUrl, const std::string& apiToken);
@@ -30,6 +29,7 @@ public:
     FaceDetect(const std::string& xmlPath);
     std::string takePic(int picNum);
     int detect(const std::string& imgPath);
+    void deletePicture(const std::string& imgPath);
 
 private:
     const std::string haarcascadeXmlPath;

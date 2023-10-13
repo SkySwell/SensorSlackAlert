@@ -5,6 +5,8 @@
 #include <wiringPi.h>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/objdetect.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 SlackMessenger::SlackMessenger(const std::string& apiUrl, const std::string& apiToken)
     : slackApiUrl(apiUrl), slackApiToken(apiToken) {}
@@ -90,11 +92,26 @@ float UltrasonicSensor::measureDistance() {
 FaceDetect::FaceDetect(const std::string& xmlPath)
 : haarcascadeXmlPath(xmlPath) {}
 
-std::string FaceDetect::takePic(int picNum) {
-    std::string photoName = "img" + std::to_string(picNum) + ".jpg";
-    std::string command = "/usr/bin/libcamera-jpeg -n -o " + photoName;
+std::string FaceDetect::takePic(int imgNum) {
+    std::string photoName = "img" + std::to_string(imgNum) + ".jpg";
+    std::string imgPath = "../img/" + photoName;
+    std::string command = "/usr/bin/libcamera-still -n -o " + imgPath;
     std::system(command.c_str());
-    return photoName;
+
+    /** openCV Image Capture
+    cv::VideoCapture cap(0);
+
+    if(!cap.isOpened()) {
+        std::cerr << "Failed to access camera" << std::endl;
+        return "";
+    }
+    cv::Mat frame;
+    cap >> frame;
+    std::string imgPath = "../img/img" + std::to_string(imgNum) + ".jpg";
+    cv::imwrite(imgPath, frame);
+    cap.release();
+    **/
+    return imgPath;
 }
 
 int FaceDetect::detect(const std::string& imgPath) {
@@ -112,14 +129,30 @@ int FaceDetect::detect(const std::string& imgPath) {
 
     std::vector<cv::Rect> faces;
     faces.clear();
+    //cv::Size minSize(50,50);
+    //cv::Size maxSize(300,200);
     faceCascade.detectMultiScale(img, faces, 1.1, 3);
 
     if(faces.size() > 0) {
         std::cout << "find FACE!" << std::endl;
+        // 얼굴 주위에 사각형 그리기
+        for (const auto& faceRect : faces) {
+            cv::rectangle(img, faceRect, cv::Scalar(0, 255, 0), 2); // 초록색 사각형 그리기
+        }
+        // 이미지에 얼굴 감지 결과를 저장
+        cv::imwrite("output.jpg", img);
+
         return 1;
+        
     }
     else {
         std::cout << "not FIND!" << std::endl;
         return 0;
     }
+}
+
+void FaceDetect::deletePicture(const std::string& imgPath) {
+    std::string command = "rm " + imgPath;
+    std::system(command.c_str());
+    std::cout << "image Deleted!" << std::endl;
 }
