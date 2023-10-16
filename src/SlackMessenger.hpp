@@ -26,13 +26,10 @@ public:
 
 class FaceDetect {
 public:
-    FaceDetect(const std::string& xmlPath);
+    FaceDetect();
     std::string takePic(int picNum);
     int detect(const std::string& imgPath);
     void deletePicture(const std::string& imgPath);
-
-private:
-    const std::string haarcascadeXmlPath;
 };
 
 #endif

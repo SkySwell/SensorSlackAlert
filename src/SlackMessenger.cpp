@@ -3,10 +3,13 @@
 #include <curl/curl.h>
 #include "SlackMessenger.hpp"
 #include <wiringPi.h>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/objdetect.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
+#include <dlib/opencv.h>
+#include <dlib/image_processing/frontal_face_detector.h>
+#include <dlib/image_processing/shape_predictor.h>
+#include <dlib/image_io.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <vector>
 
 SlackMessenger::SlackMessenger(const std::string& apiUrl, const std::string& apiToken)
     : slackApiUrl(apiUrl), slackApiToken(apiToken) {}
@@ -89,65 +92,35 @@ float UltrasonicSensor::measureDistance() {
     return dis;
 }
 
-FaceDetect::FaceDetect(const std::string& xmlPath)
-: haarcascadeXmlPath(xmlPath) {}
+FaceDetect::FaceDetect(){}
 
 std::string FaceDetect::takePic(int imgNum) {
     std::string photoName = "img" + std::to_string(imgNum) + ".jpg";
     std::string imgPath = "../img/" + photoName;
     std::string command = "/usr/bin/libcamera-still -n -o " + imgPath;
     std::system(command.c_str());
-
-    /** openCV Image Capture
-    cv::VideoCapture cap(0);
-
-    if(!cap.isOpened()) {
-        std::cerr << "Failed to access camera" << std::endl;
-        return "";
-    }
-    cv::Mat frame;
-    cap >> frame;
-    std::string imgPath = "../img/img" + std::to_string(imgNum) + ".jpg";
-    cv::imwrite(imgPath, frame);
-    cap.release();
-    **/
     return imgPath;
 }
 
 int FaceDetect::detect(const std::string& imgPath) {
 
+    dlib::frontal_face_detector faceDetector = dlib::get_frontal_face_detector();
+    dlib::shape_predictor shapePredictor;
+    dlib::deserialize("../detector/shape_predictor_68_face_landmarks.dat") >> shapePredictor;
     cv::Mat img = cv::imread(imgPath);
-    //Classifier object
-    cv::CascadeClassifier faceCascade;
-    //load XML to object(faceCascade)
-    faceCascade.load(haarcascadeXmlPath);
 
-    //XML file check
-    if(faceCascade.empty()) {
-        std::cout << "XML file load failed!" << std::endl;
-    }
-
-    std::vector<cv::Rect> faces;
-    faces.clear();
-    //cv::Size minSize(50,50);
-    //cv::Size maxSize(300,200);
-    faceCascade.detectMultiScale(img, faces, 1.1, 3);
-
-    if(faces.size() > 0) {
-        std::cout << "find FACE!" << std::endl;
-        // 얼굴 주위에 사각형 그리기
-        for (const auto& faceRect : faces) {
-            cv::rectangle(img, faceRect, cv::Scalar(0, 255, 0), 2); // 초록색 사각형 그리기
-        }
-        // 이미지에 얼굴 감지 결과를 저장
-        cv::imwrite("output.jpg", img);
-
-        return 1;
+    while(1) {
         
-    }
-    else {
-        std::cout << "not FIND!" << std::endl;
-        return 0;
+        dlib::cv_image<dlib::bgr_pixel> dlibImage(img);
+        std::vector<dlib::rectangle> faces = faceDetector(dlibImage);
+
+        if(!faces.empty()) {
+            std::cout << "face detect!" << std::endl;
+            return 1;
+        }else {
+            std::cout << "not FIND!" << std::endl;
+            return 0;
+        }
     }
 }
 
