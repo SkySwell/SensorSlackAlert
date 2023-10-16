@@ -4,3 +4,4 @@ main.cpp
 #execute file ignore
 *.exe
 test*
+shape_predictor_68_face_landmarks.dat
