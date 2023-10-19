@@ -1,5 +1,5 @@
-#ifndef SLACKMESSENGER_HPP
-#define SLACKMESSENGER_HPP
+#ifndef FUNCTIONS_HPP
+#define FUNCTIONS_HPP
 
 #include <string>
 

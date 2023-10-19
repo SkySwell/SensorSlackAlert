@@ -1,5 +1,5 @@
 #include <iostream>
-#include "SlackMessenger.hpp"
+#include "functions.hpp"
 #include <wiringPi.h>
 
 int main() {

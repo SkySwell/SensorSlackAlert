@@ -4,4 +4,7 @@ main.cpp
 #execute file ignore
 *.exe
 test*
+
+#ignore
 shape_predictor_68_face_landmarks.dat
+training*

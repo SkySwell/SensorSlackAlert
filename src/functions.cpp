@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <curl/curl.h>
-#include "SlackMessenger.hpp"
+#include "functions.hpp"
 #include <wiringPi.h>
 #include <dlib/opencv.h>
 #include <dlib/image_processing/frontal_face_detector.h>
@@ -105,23 +105,21 @@ std::string FaceDetect::takePic(int imgNum) {
 int FaceDetect::detect(const std::string& imgPath) {
 
     dlib::frontal_face_detector faceDetector = dlib::get_frontal_face_detector();
-    dlib::shape_predictor shapePredictor;
-    dlib::deserialize("../detector/shape_predictor_68_face_landmarks.dat") >> shapePredictor;
+    // dlib::shape_predictor shapePredictor;
+    // dlib::deserialize("../detector/shape_predictor_68_face_landmarks.dat") >> shapePredictor;
     cv::Mat img = cv::imread(imgPath);
+     
+    dlib::cv_image<dlib::bgr_pixel> dlibImage(img);
+    std::vector<dlib::rectangle> faces = faceDetector(dlibImage);
 
-    while(1) {
-        
-        dlib::cv_image<dlib::bgr_pixel> dlibImage(img);
-        std::vector<dlib::rectangle> faces = faceDetector(dlibImage);
-
-        if(!faces.empty()) {
-            std::cout << "face detect!" << std::endl;
-            return 1;
-        }else {
-            std::cout << "not FIND!" << std::endl;
-            return 0;
-        }
+    if(!faces.empty()) {
+        std::cout << "face detect!" << std::endl;
+        return 1;
+    }else {
+        std::cout << "not FIND!" << std::endl;
+        return 0;
     }
+
 }
 
 void FaceDetect::deletePicture(const std::string& imgPath) {
