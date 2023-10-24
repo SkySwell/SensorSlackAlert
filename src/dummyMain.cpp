@@ -5,7 +5,6 @@
 int main() {
     const std::string slackApiUrl =  "https://slack.com/api/chat.postMessage";
     const std::string slackApiToken = "input-your-slack-api-token";
-    //const std::string xmlPath = "/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_default.xml";
     const std::string jsonPath = "../text/message.json";
     int imgNum = 0;
     SlackMessenger messenger(slackApiUrl, slackApiToken);
